@@ -59,57 +59,76 @@ $buku = mysqli_query($koneksi, $query);
     <title>Katalog Buku</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body{background:#f4f6f9;}
+        .card{border:none;border-radius:14px;}
+        .table thead{background:#212529;color:white;}
+        .back-btn{
+            background:#6c757d;
+            color:white;
+            text-decoration:none;
+            padding:6px 12px;
+            border-radius:6px;
+        }
+        .back-btn:hover{background:#5a6268;color:white;}
+    </style>
 </head>
 
-<body class="bg-light">
+<body>
+
 <nav class="navbar navbar-dark bg-primary shadow">
-    <div class="container">
-        <a href="../siswa_dashboard.php" class="navbar-brand">
+    <div class="container d-flex justify-content-between">
+        <a href="../siswa_dashboard.php" class="back-btn">
             <i class="bi bi-arrow-left"></i> Kembali
         </a>
-        <span class="text-white fw-bold">Katalog Buku Perpustakaan</span>
+        <span class="navbar-brand fw-bold">Katalog Buku Perpustakaan</span>
+        <div></div>
     </div>
 </nav>
 
 <div class="container mt-4">
 
     <?php if(isset($success)): ?>
-        <div class="alert alert-success"><?= $success ?></div>
+        <div class="alert alert-success shadow-sm"><?= $success ?></div>
     <?php endif; ?>
     <?php if(isset($error)): ?>
-        <div class="alert alert-danger"><?= $error ?></div>
+        <div class="alert alert-danger shadow-sm"><?= $error ?></div>
     <?php endif; ?>
 
     <!-- SEARCH -->
-    <form class="mb-3">
-        <div class="input-group">
-            <input type="text" name="cari" class="form-control"
-                   placeholder="Cari judul, pengarang, kategori, tahun..."
-                   value="<?= htmlspecialchars($cari) ?>">
-            <button class="btn btn-primary">
-                <i class="bi bi-search"></i> Cari
-            </button>
+    <div class="card shadow mb-3">
+        <div class="card-body">
+            <form>
+                <div class="input-group">
+                    <input type="text" name="cari" class="form-control"
+                           placeholder="Cari judul, pengarang, kategori, tahun..."
+                           value="<?= htmlspecialchars($cari) ?>">
+                    <button class="btn btn-primary">
+                        <i class="bi bi-search"></i> Cari
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 
     <!-- TABEL BUKU -->
     <div class="card shadow">
-        <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead class="table-dark">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
                     <tr>
                         <th>Judul</th>
                         <th>Pengarang</th>
                         <th>Tahun</th>
                         <th>Kategori</th>
                         <th>Stok</th>
-                        <th width="160">Aksi</th>
+                        <th width="220">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                 <?php while($b=mysqli_fetch_assoc($buku)): ?>
                     <tr>
-                        <td><?= htmlspecialchars($b['judul']) ?></td>
+                        <td class="fw-semibold"><?= htmlspecialchars($b['judul']) ?></td>
                         <td><?= htmlspecialchars($b['pengarang']) ?></td>
                         <td><?= $b['tahun_terbit'] ?></td>
                         <td><span class="badge bg-info"><?= $b['kategori'] ?></span></td>
@@ -120,17 +139,17 @@ $buku = mysqli_query($koneksi, $query);
                         </td>
                         <td>
                             <?php if($b['stok']>0): ?>
-                            <form method="post" class="d-flex gap-1">
+                            <form method="post" class="d-flex gap-2">
                                 <input type="hidden" name="id_buku" value="<?= $b['id_buku'] ?>">
                                 <input type="date" name="tgl_kembali"
                                        min="<?= date('Y-m-d', strtotime('+7 days')) ?>"
                                        class="form-control form-control-sm" required>
                                 <button name="pinjam" class="btn btn-success btn-sm">
-                                    Pinjam
+                                    <i class="bi bi-bookmark-plus"></i>
                                 </button>
                             </form>
                             <?php else: ?>
-                                <button class="btn btn-secondary btn-sm" disabled>Habis</button>
+                                <button class="btn btn-secondary btn-sm" disabled>Stok Habis</button>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -139,6 +158,7 @@ $buku = mysqli_query($koneksi, $query);
             </table>
         </div>
     </div>
+
 </div>
 </body>
 </html>

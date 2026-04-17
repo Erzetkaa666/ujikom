@@ -2,6 +2,9 @@
 session_start();
 include 'koneksi.php';
 
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+
 if (!isset($_SESSION['login']) || $_SESSION['role'] != 'admin') {
     header("Location: login.php");
     exit;
@@ -12,8 +15,7 @@ $total_buku   = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM bu
 $total_siswa  = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM users WHERE role='siswa'"))[0];
 
 $pinjam_aktif = mysqli_fetch_row(mysqli_query($koneksi, "
-    SELECT COUNT(*) FROM peminjaman 
-    WHERE status='dipinjam'
+    SELECT COUNT(*) FROM peminjaman WHERE status='dipinjam'
 "))[0];
 
 $terlambat = mysqli_fetch_row(mysqli_query($koneksi, "
@@ -55,6 +57,7 @@ $data = mysqli_query($koneksi, "
 
     <!-- QUICK ACTION MENU -->
     <div class="row g-3 mb-4">
+
         <div class="col-md-3">
             <a href="buku/buku.php" class="text-decoration-none">
                 <div class="card shadow border-start border-primary border-5 h-100">
@@ -65,6 +68,7 @@ $data = mysqli_query($koneksi, "
                 </div>
             </a>
         </div>
+
         <div class="col-md-3">
             <a href="users/user.php" class="text-decoration-none">
                 <div class="card shadow border-start border-success border-5 h-100">
@@ -75,6 +79,7 @@ $data = mysqli_query($koneksi, "
                 </div>
             </a>
         </div>
+
         <div class="col-md-3">
             <a href="peminjaman/pinjam.php" class="text-decoration-none">
                 <div class="card shadow border-start border-warning border-5 h-100">
@@ -85,6 +90,7 @@ $data = mysqli_query($koneksi, "
                 </div>
             </a>
         </div>
+
         <div class="col-md-3">
             <a href="peminjaman/laporan.php" class="text-decoration-none">
                 <div class="card shadow border-start border-dark border-5 h-100">
@@ -95,7 +101,21 @@ $data = mysqli_query($koneksi, "
                 </div>
             </a>
         </div>
+
+        <!-- MENU BARU -->
+        <div class="col-md-3">
+            <a href="admin_reset_password.php" class="text-decoration-none">
+                <div class="card shadow border-start border-danger border-5 h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-key fs-1 text-danger"></i>
+                        <h6 class="mt-2">Reset Password Siswa</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+
     </div>
+
 
     <!-- STAT CARDS -->
     <div class="row g-4 mb-4">
@@ -143,6 +163,7 @@ $data = mysqli_query($koneksi, "
             <a href="peminjaman/pinjam.php" class="btn btn-sm btn-primary float-end">
                 Kelola
             </a>
+            
         </div>
         <div class="table-responsive">
             <table class="table table-hover mb-0">

@@ -2,12 +2,22 @@
 session_start();
 include 'koneksi.php';
 
+// Anti back setelah logout
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+
+// Jika sudah login
 if (isset($_SESSION['login'])) {
-    header('Location: dashboard.php');
+    if ($_SESSION['role'] == 'admin') {
+        header('Location: dashboard.php');
+    } else {
+        header('Location: siswa_dashboard.php');
+    }
     exit;
 }
 
 $error = '';
+
 if (isset($_POST['login'])) {
     $username = mysqli_real_escape_string($koneksi, $_POST['username']);
     $password = $_POST['password'];
@@ -16,6 +26,14 @@ if (isset($_POST['login'])) {
     $user = mysqli_fetch_assoc($query);
 
     if ($user && password_verify($password, $user['password'])) {
+
+        // CEK WAJIB GANTI PASSWORD
+        if ($user['wajib_ganti_password'] == 1) {
+            $_SESSION['id_user'] = $user['id_user'];
+            header("Location: ganti_password.php");
+            exit;
+        }
+
         $_SESSION['login'] = true;
         $_SESSION['role'] = $user['role'];
         $_SESSION['id_user'] = $user['id_user'];
@@ -26,11 +44,13 @@ if (isset($_POST['login'])) {
             header('Location: siswa_dashboard.php');
         }
         exit;
+
     } else {
         $error = 'Username / Password salah!';
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -41,8 +61,7 @@ if (isset($_POST['login'])) {
 </head>
 <body class="bg-light">
 
-<!-- Navbar sama seperti dashboard -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+<nav class="navbar navbar-dark bg-primary shadow">
     <div class="container">
         <span class="navbar-brand fw-bold">
             <i class="bi bi-book me-2"></i>Perpustakaan Digital
@@ -70,9 +89,13 @@ if (isset($_POST['login'])) {
                         <input type="text" name="username" class="form-control" required>
                     </div>
 
-                    <div class="mb-4">
+                    <div class="mb-2">
                         <label class="form-label fw-bold">Password</label>
                         <input type="password" name="password" class="form-control" required>
+                    </div>
+
+                    <div class="text-center mt-2 mb-3">
+                        <a href="lupa_password.php">Lupa Password?</a>
                     </div>
 
                     <button name="login" class="btn btn-primary w-100">
